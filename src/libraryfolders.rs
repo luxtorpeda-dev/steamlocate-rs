@@ -44,6 +44,9 @@ impl LibraryFolders {
 		let libraryfolders_vdf_path = steamapps.join("libraryfolders.vdf");
 		
 		if libraryfolders_vdf_path.is_file() {
+		
+			let test = steamy_vdf::load(&libraryfolders_vdf_path).unwrap();
+			println!("get_app_id_deps_paths. test {:#?}.", test);
 
 			// Load LibraryFolders table
 			match
