@@ -8,8 +8,7 @@ use std::str::FromStr;
 // from https://github.com/LovecraftianHorror/vdf-rs/issues/25
 #[derive(Debug, Clone)]
 struct RawLibraryFolders {
-    contentstatsid: u64,
-    libraries: Vec<LibraryInfo>,
+    libraries: Vec<LibraryInfo>
 }
 
 impl FromStr for RawLibraryFolders {
@@ -19,15 +18,6 @@ impl FromStr for RawLibraryFolders {
         let Vdf { key, value } = Vdf::parse(s)?;
         assert_eq!(key, "libraryfolders");
         let mut obj = value.unwrap_obj();
-
-        let contentstatsid = obj
-            .remove("contentstatsid")
-            .unwrap()
-            .pop()
-            .unwrap()
-            .unwrap_str()
-            .parse()
-            .unwrap();
 
         let mut libraries = Vec::with_capacity(obj.len());
         let mut index = 1;
@@ -44,7 +34,6 @@ impl FromStr for RawLibraryFolders {
         }
 
         Ok(Self {
-            contentstatsid,
             libraries,
         })
     }
