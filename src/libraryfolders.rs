@@ -50,16 +50,23 @@ impl LibraryFolders {
 			let vdf_text = match std::fs::read_to_string(libraryfolders_vdf_path) {
 				Ok(s) => s,
 				Err(err) => {
-					 return Err(Error::new(ErrorKind::Other, "choices array? null"));
+					 return Err(err);
 				}
 			};
 			let vdf = match Vdf::parse(&vdf_text) {
 				Ok(s) => s,
 				Err(err) => {
-					 return Err(Error::new(ErrorKind::Other, "choices array null"));
+					 return Err(Error::new(ErrorKind::Other, "parsing vdf text failed"));
 				}
 			};
-			println!("vdf. {:#?}.", vdf);
+			
+			let vdf_key = vdf.key;
+			for (name, obj) in vdf.value.unwrap_obj().iter() {
+				println!("{} is {:?}", name, obj);
+			}
+			
+			
+			
 		}
 		
 		self.discovered = true;
