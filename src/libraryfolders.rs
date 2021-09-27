@@ -80,9 +80,12 @@ impl LibraryFolders {
 						
 						let path_arr = &mut info_obj.get("path").unwrap();
 						let path_obj = path_arr.clone().pop().unwrap();
-						let path = path_obj.get_str();
-						
-						println!("{:#?}", path);
+						match path_obj.get_str() {
+							Some(path) => {
+								println!("{:#?}", path);
+							},
+							None => {}
+						}
 					},
 					None => {
 						break;
