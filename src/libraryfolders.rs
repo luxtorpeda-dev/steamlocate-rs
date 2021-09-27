@@ -89,7 +89,7 @@ impl LibraryFolders {
 									println!("found library path at {:#?} is not accessible", path);
 								}
 							},
-							None => {}
+                            None => {}
 						}
 					},
 					None => {
