@@ -30,10 +30,16 @@ pub struct LibraryFolders {
 
 impl LibraryFolders {
 	pub(crate) fn discover(&mut self, path: &PathBuf) {
-		let steamapps = path.join("SteamApps");
+		let mut steamapps = path.join("SteamApps");
+		
+		if !steamapps.is_dir() {
+			steamapps = path.join("steamapp");
+		}
+		
 		self.paths.push(steamapps.clone());
 
 		let libraryfolders_vdf_path = steamapps.join("libraryfolders.vdf");
+		
 		if libraryfolders_vdf_path.is_file() {
 
 			// Load LibraryFolders table
