@@ -33,7 +33,7 @@ impl LibraryFolders {
 		let mut steamapps = path.join("SteamApps");
 		
 		if !steamapps.is_dir() {
-			steamapps = path.join("steamapp");
+			steamapps = path.join("steamapps");
 		}
 		
 		self.paths.push(steamapps.clone());
