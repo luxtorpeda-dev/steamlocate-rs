@@ -16,11 +16,11 @@ impl FromStr for RawLibraryFolders {
 
     fn from_str(s: &str) -> KeyValuesSerdeResult<Self> {
         let Vdf { key, value } = Vdf::parse(s)?;
-        assert_eq!(key, "libraryfolders");
+        
         let mut obj = value.unwrap_obj();
 
         let mut libraries = Vec::with_capacity(obj.len());
-        let mut index = 1;
+        let mut index = 0;
         while !obj.is_empty() {
             let (key, mut values) = obj.remove_entry(index.to_string().as_str()).unwrap();
 
