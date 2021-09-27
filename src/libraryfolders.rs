@@ -41,10 +41,7 @@ impl FromStr for RawLibraryFolders {
 
 #[derive(Debug, Clone, Deserialize)]
 struct LibraryInfo {
-    path: String,
-    label: String,
-    mounted: bool,
-    contentid: u64,
+    path: String
 }
 
 /// An instance which contains all the Steam library folders installed on the file system.
