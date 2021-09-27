@@ -120,7 +120,7 @@ compile_error!("Unsupported operating system!");
 
 #[macro_use] extern crate lazy_static;
 
-use std::{collections::HashMap, path::PathBuf};
+use std::path::PathBuf;
 
 #[cfg(target_os="windows")]
 use winreg::{RegKey, enums::{HKEY_LOCAL_MACHINE, KEY_READ}};
@@ -175,41 +175,6 @@ impl SteamDir {
 		let libraryfolders = &mut self.libraryfolders;
 		if !libraryfolders.discovered { libraryfolders.discover(&self.path); }
 		&*libraryfolders
-	}
-
-	/// Returns a reference to `HashMap<u32, Option<SteamApp>>` of all `SteamApp`s located on this computer.
-	///
-	/// All `Option<SteamApp>`s in this context will be `Some`, so you can safely `unwrap()` them without panicking.
-	///
-	/// This function will cache its results and will always return a reference to the same `HashMap`.
-	/// # Example
-	/// ```rust
-	/// # use steamlocate::{SteamDir, SteamApp};
-	/// # use std::collections::HashMap;
-	/// let mut steamdir = SteamDir::locate().unwrap();
-	/// let apps: &HashMap<u32, Option<SteamApp>> = steamdir.apps();
-	/// println!("{:#?}", apps);
-	/// ```
-	/// ```ignore
-	/// {
-	/// 	4000: SteamApp (
-	/// 		appid: u32: 4000,
-	/// 		path: PathBuf: "C:\\Program Files (x86)\\steamapps\\common\\GarrysMod",
-	/// 		vdf: <steamy_vdf::Table>,
-	/// 		name: Some(String: "Garry's Mod"),
-	/// 		last_user: Some(u64: 76561198040894045) // This will be a steamid_ng::SteamID if the "steamid_ng" feature is enabled
-	/// 	)
-	/// 	...
-	/// }
-	/// ```
-	pub fn apps(&mut self) -> &HashMap<u32, Option<SteamApp>> {
-		let steam_apps = &mut self.steam_apps;
-		if !steam_apps.discovered {
-			let libraryfolders = &mut self.libraryfolders;
-			if !libraryfolders.discovered { libraryfolders.discover(&self.path); }
-			steam_apps.discover_apps(libraryfolders);
-		}
-		&steam_apps.apps
 	}
 
 	/// Returns a `Some` reference to a `SteamApp` via its app ID.
