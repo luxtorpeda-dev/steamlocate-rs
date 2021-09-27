@@ -22,13 +22,18 @@ impl FromStr for RawLibraryFolders {
         let mut libraries = Vec::with_capacity(obj.len());
         let mut index = 0;
         while !obj.is_empty() {
+			println!("{}", index);
             let (key, mut values) = obj.remove_entry(index.to_string().as_str()).unwrap();
+            println!("{} 2", index);
 
             let value = values.pop().unwrap();
             let library_info_vdf = Vdf { key, value };
-            let library_info: LibraryInfo = from_str(&library_info_vdf.to_string())?;
+            
+            //let library_info: LibraryInfo = from_str(&library_info_vdf.to_string())?;
 
-            libraries.push(library_info);
+            //libraries.push(library_info);
+            
+            println!("{:#?}", library_info_vdf);
 
             index += 1;
         }
