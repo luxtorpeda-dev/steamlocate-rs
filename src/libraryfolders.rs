@@ -30,13 +30,14 @@ impl FromStr for RawLibraryFolders {
             let library_info_vdf = Vdf { key, value };
             let info_obj = library_info_vdf.value.unwrap_obj();
             
-            let path = info_obj.get("path");
+            let path_arr = &mut info_obj.get("path").unwrap();
+            let path = path_arr.clone().pop().unwrap();
             
             //let library_info: LibraryInfo = from_str(&library_info_vdf.to_string())?;
 
             //libraries.push(library_info);
             
-            println!("{:#?}", path);
+			println!("{:#?}", path);
 
             index += 1;
         }
