@@ -1,5 +1,62 @@
 use std::path::PathBuf;
 use keyvalues_parser::Vdf;
+use keyvalues_serde::{from_str, Error as KeyValuesSerdeError, Result as KeyValuesSerdeResult};
+use serde::Deserialize;
+
+use std::str::FromStr;
+
+// from https://github.com/LovecraftianHorror/vdf-rs/issues/25
+#[derive(Debug, Clone)]
+struct RawLibraryFolders {
+    contentstatsid: u64,
+    libraries: Vec<LibraryInfo>,
+}
+
+impl FromStr for RawLibraryFolders {
+    type Err = KeyValuesSerdeError;
+
+    fn from_str(s: &str) -> KeyValuesSerdeResult<Self> {
+        let Vdf { key, value } = Vdf::parse(s)?;
+        assert_eq!(key, "libraryfolders");
+        let mut obj = value.unwrap_obj();
+
+        let contentstatsid = obj
+            .remove("contentstatsid")
+            .unwrap()
+            .pop()
+            .unwrap()
+            .unwrap_str()
+            .parse()
+            .unwrap();
+
+        let mut libraries = Vec::with_capacity(obj.len());
+        let mut index = 1;
+        while !obj.is_empty() {
+            let (key, mut values) = obj.remove_entry(index.to_string().as_str()).unwrap();
+
+            let value = values.pop().unwrap();
+            let library_info_vdf = Vdf { key, value };
+            let library_info: LibraryInfo = from_str(&library_info_vdf.to_string())?;
+
+            libraries.push(library_info);
+
+            index += 1;
+        }
+
+        Ok(Self {
+            contentstatsid,
+            libraries,
+        })
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+struct LibraryInfo {
+    path: String,
+    label: String,
+    mounted: bool,
+    contentid: u64,
+}
 
 /// An instance which contains all the Steam library folders installed on the file system.
 /// Example:
@@ -47,31 +104,13 @@ impl LibraryFolders {
 		if libraryfolders_vdf_path.is_file() {
 			let vdf_text = match std::fs::read_to_string(libraryfolders_vdf_path) {
 				Ok(s) => s,
-				Err(err) => {
-					 return;
-				}
-			};
-			let vdf = match Vdf::parse(&vdf_text) {
-				Ok(s) => s,
-				Err(err) => {
+				Err(_err) => {
 					 return;
 				}
 			};
 			
-			let vdf_key = vdf.key;
-			for (name, obj) in vdf.value.unwrap_obj().iter() {
-				println!("{} is {:?}", name, obj);
-				
-				let data = &obj[0];
-				println!("data {:?}", data);
-				
-				/*println!("found path: {:?}", path);
-				
-				let pathbuf = PathBuf::from(path);
-				let pathbuf_joined = pathbuf.join(&steamapps_name);
-				self.paths.append(pathbuf_joined);*/
-			}
-			
+			let library_folders: RawLibraryFolders = vdf_text.parse().unwrap();
+			println!("{:#?}", library_folders);
 			
 			
 		}
