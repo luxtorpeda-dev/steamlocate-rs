@@ -50,6 +50,7 @@ impl LibraryFolders {
 				steamy_vdf::load(libraryfolders_vdf_path).as_ref()
 
 				.and_then(|vdf| vdf.get("LibraryFolders")
+					.ok_or(vdf.get("libraryfolders"))
 					.ok_or(&steamy_vdf::Error::Parse)
 
 					.and_then(|entry| entry.as_table()
