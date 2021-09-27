@@ -79,11 +79,14 @@ impl LibraryFolders {
 						let info_obj = library_info_vdf.value.unwrap_obj();
 						
 						let path_arr = &mut info_obj.get("path").unwrap();
-						let path = path_arr.clone().pop().unwrap();
+						let path_obj = path_arr.clone().pop().unwrap();
+						let path = path_obj.get_str();
 						
 						println!("{:#?}", path);
 					},
-					None => {}
+					None => {
+						break;
+					}
 				}
 
 				index += 1;
