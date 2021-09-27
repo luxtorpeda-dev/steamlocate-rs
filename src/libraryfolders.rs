@@ -1,57 +1,5 @@
 use std::path::PathBuf;
 use keyvalues_parser::Vdf;
-use keyvalues_serde::{from_str, Error as KeyValuesSerdeError, Result as KeyValuesSerdeResult};
-use serde::Deserialize;
-
-use std::str::FromStr;
-
-// from https://github.com/LovecraftianHorror/vdf-rs/issues/25
-#[derive(Debug, Clone)]
-struct RawLibraryFolders {
-    libraries: Vec<LibraryInfo>
-}
-
-impl FromStr for RawLibraryFolders {
-    type Err = KeyValuesSerdeError;
-
-    fn from_str(s: &str) -> KeyValuesSerdeResult<Self> {
-        let Vdf { key, value } = Vdf::parse(s)?;
-        
-        let mut obj = value.unwrap_obj();
-
-        let mut libraries = Vec::with_capacity(obj.len());
-        let mut index = 0;
-        while !obj.is_empty() {
-			println!("{}", index);
-            let (key, mut values) = obj.remove_entry(index.to_string().as_str()).unwrap();
-            println!("{} 2", index);
-
-            let value = values.pop().unwrap();
-            let library_info_vdf = Vdf { key, value };
-            let info_obj = library_info_vdf.value.unwrap_obj();
-            
-            let path_arr = &mut info_obj.get("path").unwrap();
-            let path = path_arr.clone().pop().unwrap();
-            
-            //let library_info: LibraryInfo = from_str(&library_info_vdf.to_string())?;
-
-            //libraries.push(library_info);
-            
-			println!("{:#?}", path);
-
-            index += 1;
-        }
-
-        Ok(Self {
-            libraries,
-        })
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-struct LibraryInfo {
-    path: String
-}
 
 /// An instance which contains all the Steam library folders installed on the file system.
 /// Example:
@@ -94,20 +42,52 @@ impl LibraryFolders {
 		
 		self.paths.push(steamapps.clone());
 
+		// from https://github.com/LovecraftianHorror/vdf-rs/issues/25
 		let libraryfolders_vdf_path = steamapps.join("libraryfolders.vdf");
-		
 		if libraryfolders_vdf_path.is_file() {
 			let vdf_text = match std::fs::read_to_string(libraryfolders_vdf_path) {
 				Ok(s) => s,
 				Err(_err) => {
-					 return;
+					println!("discover. vdf read error");
+					return;
 				}
 			};
 			
-			let library_folders: RawLibraryFolders = vdf_text.parse().unwrap();
-			println!("{:#?}", library_folders);
+			let Vdf { key, value } = match Vdf::parse(&vdf_text) {
+				Ok(s) => s,
+				Err(_err) => {
+					println!("discover. vdf parse error");
+					return
+				}
+			};
 			
+			if key != "libraryfolders" {
+				println!("discover. key incorrect {}", key);
+				return
+			}
 			
+			let mut obj = value.unwrap_obj();
+			let mut index = 0;
+			while !obj.is_empty() {
+				match obj.remove_entry(index.to_string().as_str()) {
+					Some(item) => {
+						let key = item.0;
+						let mut values = item.1;
+						
+						let value = values.pop().unwrap();
+						let library_info_vdf = Vdf { key, value };
+						let info_obj = library_info_vdf.value.unwrap_obj();
+						
+						let path_arr = &mut info_obj.get("path").unwrap();
+						let path = path_arr.clone().pop().unwrap();
+						
+						println!("{:#?}", path);
+					},
+					None => {}
+				}
+
+				index += 1;
+			}
 		}
 		
 		self.discovered = true;

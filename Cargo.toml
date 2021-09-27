@@ -16,8 +16,6 @@ steamid_ng = ["steamid-ng"]
 [dependencies]
 steamy-vdf = "0.*.*"
 keyvalues-parser = "0.1.0"
-keyvalues-serde = "0.1.0"
-serde = { version = "1.0.0", features = ["derive"] }
 anyhow = "1.*"
 regex = "1.*"
 lazy_static = "1.*"
