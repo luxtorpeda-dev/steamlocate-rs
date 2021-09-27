@@ -64,6 +64,7 @@ impl SteamApps {
 	pub(crate) fn discover_app(&mut self, libraryfolders: &LibraryFolders, app_id: &u32) -> Option<()> {
 		for libraryfolder in &libraryfolders.paths {
 			let mut appmanifest_path = libraryfolder.join(format!("appmanifest_{}.acf", app_id));
+			println!("looking for {:#?}", appmanifest_path);
 			if appmanifest_path.is_file() {
 				let appmanifest_vdf = steamy_vdf::load(&appmanifest_path).ok()?;
 

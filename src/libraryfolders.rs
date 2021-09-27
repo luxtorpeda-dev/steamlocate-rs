@@ -80,11 +80,10 @@ impl LibraryFolders {
 						let path_obj = path_arr.clone().pop().unwrap();
 						match path_obj.get_str() {
 							Some(path) => {
-								println!("found library path at {:#?}", path);
-								
 								let mut new_path = PathBuf::from(path);
 								if new_path.exists() {
 									new_path = new_path.join(steamapps_name);
+									println!("found library path at {:#?}", new_path);
 									self.paths.push(new_path);
 								} else {
 									println!("found library path at {:#?} is not accessible", path);
