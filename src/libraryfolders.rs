@@ -50,7 +50,6 @@ impl LibraryFolders {
 				steamy_vdf::load(libraryfolders_vdf_path).as_ref()
 
 				.and_then(|vdf| vdf.get("LibraryFolders")
-					.ok_or(vdf.get("libraryfolders"))
 					.ok_or(&steamy_vdf::Error::Parse)
 
 					.and_then(|entry| entry.as_table()
@@ -58,7 +57,33 @@ impl LibraryFolders {
 					)
 				)
 			{
-				Err(_) => {},
+				Err(_) => {
+					let libraryfolders_vdf_path_new = steamapps.join("libraryfolders.vdf");
+					match
+						steamy_vdf::load(libraryfolders_vdf_path_new).as_ref()
+
+						.and_then(|vdf| vdf.get("libraryfolders")
+							.ok_or(&steamy_vdf::Error::Parse)
+
+							.and_then(|entry| entry.as_table()
+								.ok_or(&steamy_vdf::Error::Parse)
+							)
+						)
+					{
+						Err(_) => {},
+						Ok(libraryfolders_vdf) => {
+							self.paths.append(
+								// Filter out non-numeric keys and convert library folder Strings to PathBufs
+								&mut libraryfolders_vdf.keys().filter_map(|key| {
+									key.parse::<u32>().ok()?;
+									Some(PathBuf::from(
+										libraryfolders_vdf.get(key)?.as_str()?.to_string()
+									).join(steamapps_name))
+								}).collect::<Vec<PathBuf>>()
+							)
+						}
+					}
+				},
 				Ok(libraryfolders_vdf) => {
 					self.paths.append(
 						// Filter out non-numeric keys and convert library folder Strings to PathBufs
