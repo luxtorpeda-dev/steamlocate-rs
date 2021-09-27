@@ -57,7 +57,9 @@ impl LibraryFolders {
 					)*/
 				)
 			{
-				Err(_) => {},
+				Err(err) => {
+					println!("get_app_id_deps_paths. err {:#?}.", err);
+				},
 				Ok(libraryfolders_vdf) => {
 					println!("get_app_id_deps_paths. steamdir found at {:#?}.", libraryfolders_vdf);
 					/*self.paths.append(
