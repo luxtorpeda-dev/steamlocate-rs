@@ -66,8 +66,9 @@ impl SteamApps {
 			let mut appmanifest_path = libraryfolder.join(format!("appmanifest_{}.acf", app_id));
 			println!("looking for {:#?}", appmanifest_path);
 			if appmanifest_path.is_file() {
+				println!("looking for {:#?} is file", appmanifest_path);
 				let appmanifest_vdf = steamy_vdf::load(&appmanifest_path).ok()?;
-
+				println!("looking for {:#?} load success", appmanifest_path);
 				appmanifest_path.pop(); appmanifest_path.push("common");
 
 				self.apps.insert(
