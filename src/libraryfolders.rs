@@ -39,8 +39,6 @@ impl LibraryFolders {
 			steamapps_name = "steamapps";
 			steamapps = path.join(&steamapps_name);
 		}
-		
-		self.paths.push(steamapps.clone());
 
 		// from https://github.com/LovecraftianHorror/vdf-rs/issues/25
 		let libraryfolders_vdf_path = steamapps.join("libraryfolders.vdf");
@@ -82,7 +80,15 @@ impl LibraryFolders {
 						let path_obj = path_arr.clone().pop().unwrap();
 						match path_obj.get_str() {
 							Some(path) => {
-								println!("{:#?}", path);
+								println!("found library path at {:#?}", path);
+								
+								let mut new_path = PathBuf::from(path);
+								if new_path.exists() {
+									new_path = new_path.join(steamapps_name);
+									self.paths.push(new_path);
+								} else {
+									println!("found library path at {:#?} is not accessible", path);
+								}
 							},
 							None => {}
 						}
