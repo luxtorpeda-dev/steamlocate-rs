@@ -49,7 +49,7 @@ impl LibraryFolders {
 			match
 				steamy_vdf::load(libraryfolders_vdf_path).as_ref()
 
-				.and_then(|vdf| vdf.get("libraryfolders")
+				.and_then(|vdf| vdf.get("LibraryFolders")
 					.ok_or(&steamy_vdf::Error::Parse)
 
 					.and_then(|entry| entry.as_table()
@@ -85,6 +85,7 @@ impl LibraryFolders {
 					}
 				},
 				Ok(libraryfolders_vdf) => {
+					println!("get_app_id_deps_paths. steamdir found at {:#?}.", libraryfolders_vdf);
 					self.paths.append(
 						// Filter out non-numeric keys and convert library folder Strings to PathBufs
 						&mut libraryfolders_vdf.keys().filter_map(|key| {
